@@ -7,7 +7,7 @@ import Register from "@/app/Screens/Register";
 import { StatusBar } from "react-native";
 import Accueil from "./Screens/Accueil";
 import Profil from "./Screens/Profil";
-import { NavigationContainer } from "@react-navigation/native";
+import CustomHeader from "@/components/MyComponents/CustomHeader";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,10 +17,34 @@ export default function Index() {
       <StatusBar barStyle="dark-content" />
       <Stack.Navigator screenOptions={{ headerShown: true }}>
         <Stack.Screen name="Splash" component={SplashScreenComponent} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Profil" component={Profil} />
-        <Stack.Screen name="Accueil" component={Accueil} />
-        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            header: () => <CustomHeader title="Login" />,
+          }}
+        />
+        <Stack.Screen
+          name="Profil"
+          component={Profil}
+          options={{
+            header: () => <CustomHeader title="Profil" />,
+          }}
+        />
+        <Stack.Screen
+          name="Accueil"
+          component={Accueil}
+          options={{
+            header: () => <CustomHeader title="Accueil" />,
+          }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{
+            header: () => <CustomHeader title="Register" />,
+          }}
+        />
       </Stack.Navigator>
     </>
   );

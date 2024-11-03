@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseApp } from "../../Config/FirebaseHelper";
+import CustomHeader from "@/components/MyComponents/CustomHeader";
 
 export default function Register() {
   const [getFirstName, setFirstName] = useState<string>("");
@@ -48,7 +49,6 @@ export default function Register() {
     setDisabled(true);
     setLoading(true);
 
-    // Resetting errors
     setFirstnameError("");
     setLastnameError("");
     setTelephoneError("");
