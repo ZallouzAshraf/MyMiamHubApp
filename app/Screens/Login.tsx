@@ -14,6 +14,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore"; // Import Firestore functions
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const [getEmailId, setEmailId] = useState<string>("");
@@ -32,7 +42,6 @@ export default function Login() {
   const loginFunction = async (): Promise<void> => {
     setDisabled(true);
     setLoading(true);
-
     setEmailError("");
     setPasswordError("");
 
@@ -49,9 +58,27 @@ export default function Login() {
 
     if (isValid) {
       const auth = getAuth();
+      const db = getFirestore();
       try {
-        await signInWithEmailAndPassword(auth, getEmailId, getPassword);
-        navigation.navigate("Accueil");
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          getEmailId,
+          getPassword
+        );
+        const uid = userCredential.user.uid;
+
+        // Query the `users` collection to find a document with the matching UID field
+        const userQuery = query(
+          collection(db, "users"),
+          where("uid", "==", uid)
+        );
+        const querySnapshot = await getDocs(userQuery);
+
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          await AsyncStorage.setItem("user", JSON.stringify(userData));
+          navigation.navigate("Accueil");
+        }
       } catch (error: any) {
         if (error.code === "auth/user-not-found") {
           setEmailError("No account found with this email.");
@@ -98,7 +125,7 @@ export default function Login() {
             onChangeText={(value: string) => {
               setEmailId(value);
               if (value === "") {
-                setEmailError("Telephone is Required");
+                setEmailError("Email is Required");
               } else {
                 setEmailError("");
               }
@@ -123,7 +150,7 @@ export default function Login() {
             onChangeText={(value: string) => {
               setPassword(value);
               if (value === "") {
-                setPasswordError("Telephone is Required");
+                setPasswordError("Password is Required");
               } else {
                 setPasswordError("");
               }

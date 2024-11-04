@@ -1,27 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ImageBackground } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type User = {
-  nom: string;
-  prenom: string;
+interface UserData {
   email: string;
-  password: string;
+  firstName: string;
+  lastName: string;
   telephone: string;
-};
+  password: string;
+  uid: string;
+}
 
 export default function Profil() {
   const navigation = useNavigation<NavigationProp<any>>();
 
-  const user: User = {
-    nom: "Zalouz",
-    prenom: "Ashraf",
-    email: "zallouzashraf@gmail.com",
-    password: "123456",
-    telephone: "+2162222222",
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  // Function to retrieve user data from AsyncStorage
+  const retrieveUserData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("user");
+      if (jsonValue) {
+        const user: UserData = JSON.parse(jsonValue);
+        setUserData(user); // Update state with user data
+      } else {
+        console.log("No user data found.");
+      }
+    } catch (error) {
+      console.error("Error retrieving user data:", error);
+    }
   };
+
+  useEffect(() => {
+    retrieveUserData(); // Retrieve data when component mounts
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -47,27 +61,27 @@ export default function Profil() {
       <View style={styles.profileCard}>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>First Name :</Text>
-          <Text style={styles.value}>{user.prenom}</Text>
+          <Text style={styles.value}>{userData?.firstName}</Text>
         </View>
 
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Last Name :</Text>
-          <Text style={styles.value}>{user.nom}</Text>
+          <Text style={styles.value}>{userData?.lastName}</Text>
         </View>
 
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Email :</Text>
-          <Text style={styles.value}>{user.email}</Text>
+          <Text style={styles.value}>{userData?.email}</Text>
         </View>
 
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Mot de passe :</Text>
-          <Text style={styles.value}>{user.password}</Text>
+          <Text style={styles.value}>{userData?.password}</Text>
         </View>
 
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Téléphone :</Text>
-          <Text style={styles.value}>{user.telephone}</Text>
+          <Text style={styles.value}>{userData?.telephone}</Text>
         </View>
 
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>

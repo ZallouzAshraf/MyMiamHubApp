@@ -20,9 +20,7 @@ export default function Index() {
         <Stack.Screen
           name="Splash"
           component={SplashScreenComponent}
-          options={{
-            header: () => <CustomHeader title="" />,
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Login"

@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseApp } from "../../Config/FirebaseHelper";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 export default function Register() {
   const [getFirstName, setFirstName] = useState<string>("");
@@ -77,9 +78,23 @@ export default function Register() {
 
     const app = getFirebaseApp();
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     try {
-      await createUserWithEmailAndPassword(auth, getEmailId, getPassword);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        getEmailId,
+        getPassword
+      );
+      const user = userCredential.user;
+      await addDoc(collection(db, "users"), {
+        uid: user.uid,
+        firstName: getFirstName,
+        lastName: getLastName,
+        telephone: getTelephone,
+        email: getEmailId,
+        password: getPassword,
+      });
       console.log("User registered");
       navigation.navigate("SplashScreenRegister");
     } catch (error: any) {
@@ -93,6 +108,7 @@ export default function Register() {
         );
       } else {
         setEmailError("An error occurred during registration.");
+        console.log(error);
       }
     } finally {
       setLoading(false);
@@ -253,11 +269,7 @@ export default function Register() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.registerBtn}
-          onPress={registerFunction}
-          disabled={getDisabled}
-        >
+        <TouchableOpacity style={styles.registerBtn} onPress={registerFunction}>
           <Text style={styles.registerBtnText}>REGISTER</Text>
         </TouchableOpacity>
         <Text style={styles.createAccount}>
