@@ -5,6 +5,7 @@ import {
   getReactNativePersistence,
   Auth,
   Persistence,
+  getAuth,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAnalytics } from "firebase/analytics";
@@ -38,3 +39,5 @@ export const getFirebaseApp = (): FirebaseApp => {
   firebaseapp = app;
   return firebaseapp;
 };
+const firebaseApp = getFirebaseApp();
+const auth = getAuth(firebaseApp);

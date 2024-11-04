@@ -7,10 +7,13 @@ import {
   Image,
   Text,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
   const [getEmailId, setEmailId] = useState<string>("");
@@ -26,7 +29,7 @@ export default function Login() {
 
   const navigation = useNavigation<NavigationProp<any>>();
 
-  const loginFunction = (): void => {
+  const loginFunction = async (): Promise<void> => {
     setDisabled(true);
     setLoading(true);
 
@@ -43,6 +46,27 @@ export default function Login() {
       setPasswordError("Password is Required");
       isValid = false;
     }
+
+    if (isValid) {
+      const auth = getAuth();
+      try {
+        await signInWithEmailAndPassword(auth, getEmailId, getPassword);
+        navigation.navigate("Accueil");
+      } catch (error: any) {
+        if (error.code === "auth/user-not-found") {
+          setEmailError("No account found with this email.");
+        } else if (error.code === "auth/wrong-password") {
+          setPasswordError("Incorrect password.");
+        } else {
+          setEmailError("Check your email and password.");
+          console.log(error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
   };
 
   const toggleShowPassword = (): void => {
@@ -50,95 +74,98 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <KeyboardAvoidingView
+      style={styles.containerK}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
 
-      <Image
-        style={styles.myLogo}
-        source={require("../../assets/images/logo.png")}
-      />
-
-      <View
-        style={[
-          styles.inputContainer,
-          isEmailFocused && styles.inputFocused,
-          emailError ? { borderColor: "#de3138" } : {},
-        ]}
-      >
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          keyboardType="email-address"
-          placeholderTextColor="#fff"
-          value={getEmailId}
-          onChangeText={(value: string) => {
-            setEmailId(value);
-            if (value === "") {
-              setEmailError("Telephone is Required");
-            } else {
-              setEmailError("");
-            }
-          }}
-          onFocus={() => setEmailFocused(true)}
-          onBlur={() => setEmailFocused(false)}
+        <Image
+          style={styles.myLogo}
+          source={require("../../assets/images/logo.png")}
         />
-      </View>
-
-      <View
-        style={[
-          styles.inputContainer,
-          isPasswordFocused && styles.inputFocused,
-          passwordError ? { borderColor: "#de3138" } : {},
-        ]}
-      >
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          secureTextEntry={!showPassword}
-          placeholderTextColor="#fff"
-          value={getPassword}
-          onChangeText={(value: string) => {
-            setPassword(value);
-            if (value === "") {
-              setPasswordError("Telephone is Required");
-            } else {
-              setPasswordError("");
-            }
-          }}
-          onFocus={() => setPasswordFocused(true)}
-          onBlur={() => setPasswordFocused(false)}
-        />
-        <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
-          <MaterialCommunityIcons
-            name={showPassword ? "eye-off" : "eye"}
-            size={22}
-            color="#fff"
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+        <View
+          style={[styles.inputContainer, isEmailFocused && styles.inputFocused]}
+        >
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            keyboardType="email-address"
+            placeholderTextColor="#fff"
+            value={getEmailId}
+            onChangeText={(value: string) => {
+              setEmailId(value);
+              if (value === "") {
+                setEmailError("Telephone is Required");
+              } else {
+                setEmailError("");
+              }
+            }}
+            onFocus={() => setEmailFocused(true)}
+            onBlur={() => setEmailFocused(false)}
           />
+        </View>
+
+        <View
+          style={[
+            styles.inputContainer,
+            isPasswordFocused && styles.inputFocused,
+          ]}
+        >
+          <TextInput
+            placeholder="Password"
+            style={styles.input}
+            secureTextEntry={!showPassword}
+            placeholderTextColor="#fff"
+            value={getPassword}
+            onChangeText={(value: string) => {
+              setPassword(value);
+              if (value === "") {
+                setPasswordError("Telephone is Required");
+              } else {
+                setPasswordError("");
+              }
+            }}
+            onFocus={() => setPasswordFocused(true)}
+            onBlur={() => setPasswordFocused(false)}
+          />
+          <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
+            <MaterialCommunityIcons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color="#fff"
+            />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.forgotBtn}>
+          <Text style={styles.forgotBtnText}>Forgot Password ?</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.loginBtn} onPress={loginFunction}>
+          <Text style={styles.loginBtnText}>
+            {loading ? "Loading..." : "LOGIN"}
+          </Text>
+        </TouchableOpacity>
+        <Text style={styles.createAccount}>
+          Don't have an account ?
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text style={styles.registerHere}>Register Here !</Text>
+          </TouchableOpacity>
+        </Text>
       </View>
-
-      <TouchableOpacity style={styles.forgotBtn}>
-        <Text style={styles.forgotBtnText}>Forgot Password ?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.loginBtn}
-        onPress={loginFunction}
-        disabled={getDisabled}
-      >
-        <Text style={styles.loginBtnText}>LOGIN</Text>
-      </TouchableOpacity>
-      <Text style={styles.createAccount}>
-        Don't have an account ?
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={styles.registerHere}>Register Here !</Text>
-        </TouchableOpacity>
-      </Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  containerK: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#000",
+  },
   container: {
     flex: 1,
     backgroundColor: "#000",

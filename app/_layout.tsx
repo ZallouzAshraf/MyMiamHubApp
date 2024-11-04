@@ -8,6 +8,7 @@ export default function RootLayout() {
       <Stack.Screen name="Screens/Register" />
       <Stack.Screen name="Screens/Accueil" />
       <Stack.Screen name="Screens/Profil" />
+      <Stack.Screen name="Screens/SplashScreenRegister" />
     </Stack>
   );
 }

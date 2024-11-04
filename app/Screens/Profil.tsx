@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ImageBackground } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Type pour les informations utilisateur
 type User = {
   nom: string;
   prenom: string;
@@ -23,9 +23,14 @@ export default function Profil() {
     telephone: "+2162222222",
   };
 
-  const handleSignOut = () => {
-    console.log("User signed out");
-    navigation.navigate("Login");
+  const handleSignOut = async () => {
+    try {
+      await AsyncStorage.removeItem("userToken");
+      console.log("User signed out");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   return (
@@ -69,12 +74,6 @@ export default function Profil() {
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.logoandtext}>
-        <Image
-          source={require("../../assets/images/logo.png")}
-          style={styles.logo}
-        />
-      </View>
     </ImageBackground>
   );
 }
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 7,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#888",
@@ -116,16 +115,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   value: {
-    flex: 2,
+    flex: 1.5,
     fontSize: 15,
     color: "#fff",
+    width: 10,
     fontWeight: "700",
+    textAlign: "center",
   },
   signOutButton: {
-    width: 200,
+    width: 130,
     alignSelf: "center",
-    marginTop: 30,
-    backgroundColor: "#ce0000",
+    marginTop: 80,
+    left: 100,
+    backgroundColor: "#850000",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
@@ -141,14 +143,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginLeft: 40,
   },
-  logo: {
-    width: 120,
-    height: 120,
-    marginTop: 40,
-    marginRight: 58,
-    borderWidth: 1,
-    borderRadius: 100,
-  },
+
   logoandtext: {
     flexDirection: "row",
     justifyContent: "center",
