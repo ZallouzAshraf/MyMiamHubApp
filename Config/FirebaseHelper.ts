@@ -3,12 +3,11 @@ import {
   initializeAuth,
   // @ts-ignore
   getReactNativePersistence,
-  Auth,
   Persistence,
   getAuth,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 
 let firebaseapp: FirebaseApp | undefined;
 
@@ -39,5 +38,7 @@ export const getFirebaseApp = (): FirebaseApp => {
   firebaseapp = app;
   return firebaseapp;
 };
+
 const firebaseApp = getFirebaseApp();
-const auth = getAuth(firebaseApp);
+export const auth = getAuth(firebaseApp);
+export const db = getFirestore(firebaseApp);
