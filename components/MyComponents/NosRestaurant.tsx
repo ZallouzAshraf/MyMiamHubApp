@@ -9,6 +9,13 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+type RootStackParamList = {
+  NosRestaurant: undefined;
+  RestaurantDetails: { restaurantId: string };
+};
 
 interface Restaurant {
   id: string;
@@ -17,11 +24,13 @@ interface Restaurant {
   imageUrl: string;
   rating: number;
 }
+
 const getRandomRating = () => parseFloat((Math.random() * 2 + 3).toFixed(1));
 
 const NosRestaurant: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -55,7 +64,6 @@ const NosRestaurant: React.FC = () => {
       }
     );
 
-    // Cleanup listener on unmount
     return () => unsubscribe();
   }, []);
 
@@ -63,16 +71,29 @@ const NosRestaurant: React.FC = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
+  const handleRestaurantPress = (restaurantId: string) => {
+    navigation.navigate("RestaurantDetails", { restaurantId });
+  };
+
   return (
     <ScrollView>
       {restaurants.map((restaurant) => (
-        <RestaurantCard
+        <TouchableOpacity
           key={restaurant.id}
-          name={restaurant.name}
-          address={restaurant.address}
-          image={{ uri: restaurant.imageUrl }}
-          rating={restaurant.rating}
-        />
+          onPress={() =>
+            navigation.navigate("RestaurantDetails", {
+              restaurantId: restaurant.id,
+            })
+          }
+        >
+          <RestaurantCard
+            name={restaurant.name}
+            address={restaurant.address}
+            image={{ uri: restaurant.imageUrl }}
+            rating={restaurant.rating}
+            onPress={() => handleRestaurantPress(restaurant.id)}
+          />
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

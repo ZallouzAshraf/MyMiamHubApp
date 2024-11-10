@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 50,
   },
+
   title: { fontSize: 26, fontWeight: "bold", width: 256 },
   searchContainer: { flexDirection: "row", marginTop: 16 },
   searchInput: {
@@ -80,6 +81,9 @@ const styles = StyleSheet.create({
   foodPrice: { marginTop: 4, color: "#555" },
   rating: { flexDirection: "row", alignItems: "center", marginTop: 4 },
   ratingText: { marginLeft: 4, color: "#fcb823" },
+  carticon: {
+    marginTop: 5,
+  },
 });
 
 export default styles;

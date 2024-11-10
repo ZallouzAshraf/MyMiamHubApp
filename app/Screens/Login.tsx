@@ -67,7 +67,6 @@ export default function Login() {
         );
         const uid = userCredential.user.uid;
 
-        // Query the `users` collection to find a document with the matching UID field
         const userQuery = query(
           collection(db, "users"),
           where("uid", "==", uid)

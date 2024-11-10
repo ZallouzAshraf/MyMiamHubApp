@@ -9,51 +9,74 @@ import Accueil from "./Screens/Accueil";
 import Profil from "./Screens/Profil";
 import SplashScreenRegister from "./Screens/SplashScreenRegister";
 import CustomHeader from "@/components/MyComponents/CustomHeader";
+import RestaurantDetails from "./Screens/RestaurantDetails";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CustomHeaderLight from "@/components/MyComponents/CustomHeaderLight";
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+  Splash: undefined;
+  Login: undefined;
+  Profil: undefined;
+  Accueil: undefined;
+  Register: undefined;
+  SplashScreenRegister: undefined;
+  NosRestaurant: undefined;
+  RestaurantDetails: { restaurantId: string };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Index() {
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <Stack.Navigator screenOptions={{ headerShown: true }}>
-        <Stack.Screen
-          name="Splash"
-          component={SplashScreenComponent}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Profil"
-          component={Profil}
-          options={{
-            header: () => <CustomHeader title="Profil" />,
-          }}
-        />
-        <Stack.Screen
-          name="Accueil"
-          component={Accueil}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{
-            header: () => <CustomHeader title="Register" />,
-          }}
-        />
-        <Stack.Screen
-          name="SplashScreenRegister"
-          component={SplashScreenRegister}
-          options={{
-            header: () => <CustomHeader title="Félécitations" />,
-          }}
-        />
-      </Stack.Navigator>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar barStyle="dark-content" />
+        <Stack.Navigator screenOptions={{ headerShown: true }}>
+          <Stack.Screen
+            name="Splash"
+            component={SplashScreenComponent}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Profil"
+            component={Profil}
+            options={{
+              header: () => <CustomHeader title="Profil" />,
+            }}
+          />
+          <Stack.Screen
+            name="Accueil"
+            component={Accueil}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{
+              header: () => <CustomHeader title="Register" />,
+            }}
+          />
+          <Stack.Screen
+            name="SplashScreenRegister"
+            component={SplashScreenRegister}
+            options={{
+              header: () => <CustomHeader title="Félécitations" />,
+            }}
+          />
+          <Stack.Screen
+            name="RestaurantDetails"
+            component={RestaurantDetails}
+            options={{
+              header: () => <CustomHeaderLight title="Restaurant Details" />,
+            }}
+          />
+        </Stack.Navigator>
+      </GestureHandlerRootView>
     </>
   );
 }

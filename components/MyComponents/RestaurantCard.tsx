@@ -13,6 +13,7 @@ interface RestaurantCardProps {
   address: string;
   image: ImageSourcePropType;
   rating: number;
+  onPress: () => void;
 }
 
 const RestaurantCard: React.FC<RestaurantCardProps> = ({
@@ -20,6 +21,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
   address,
   image,
   rating,
+  onPress,
 }) => {
   return (
     <View style={styles.card}>
