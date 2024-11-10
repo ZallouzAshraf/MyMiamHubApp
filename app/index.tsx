@@ -12,6 +12,7 @@ import CustomHeader from "@/components/MyComponents/CustomHeader";
 import RestaurantDetails from "./Screens/RestaurantDetails";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomHeaderLight from "@/components/MyComponents/CustomHeaderLight";
+import Cart from "./Screens/Cart";
 
 type RootStackParamList = {
   Splash: undefined;
@@ -21,6 +22,7 @@ type RootStackParamList = {
   Register: undefined;
   SplashScreenRegister: undefined;
   NosRestaurant: undefined;
+  Cart: undefined;
   RestaurantDetails: { restaurantId: string };
 };
 
@@ -73,6 +75,13 @@ export default function Index() {
             component={RestaurantDetails}
             options={{
               header: () => <CustomHeaderLight title="Restaurant Details" />,
+            }}
+          />
+          <Stack.Screen
+            name="Cart"
+            component={Cart}
+            options={{
+              header: () => <CustomHeaderLight title="Cart" />,
             }}
           />
         </Stack.Navigator>

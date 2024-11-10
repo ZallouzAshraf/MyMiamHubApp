@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "../../Config/FirebaseHelper";
@@ -25,6 +26,7 @@ interface Dish {
   category: string;
   price: number;
   imageURL: string;
+  quantity: number;
 }
 
 interface RestaurantDetailsProps {
@@ -115,6 +117,33 @@ const RestaurantDetails: React.FC<RestaurantDetailsProps> = ({ route }) => {
     new Set(menuItems.map((dish) => dish.category))
   );
 
+  const addToCart = (dish: Dish) => {
+    const existingDish = cartItems.find((item) => item.name === dish.name);
+    if (existingDish) {
+      const updatedCart = cartItems.map((item) =>
+        item.name === dish.name
+          ? { ...item, quantity: (item.quantity || 1) + 1 }
+          : item
+      );
+      setCartItems(updatedCart);
+      AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
+    } else {
+      const updatedCart = [...cartItems, { ...dish, quantity: 1 }];
+      setCartItems(updatedCart);
+      AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
+    }
+  };
+
+  const alertmsg = (dish: Dish) =>
+    Alert.alert("Confirmation", "Voulez-vous confirmer ?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "OK", onPress: () => addToCart(dish) },
+    ]);
+
   const filterByCategory = (category: string | null) => {
     setSelectedCategory(category);
     if (category) {
@@ -174,12 +203,12 @@ const RestaurantDetails: React.FC<RestaurantDetailsProps> = ({ route }) => {
         <View style={styles.dishGrid}>
           {filteredItems.map((dish) => (
             <View key={dish.imageURL} style={styles.dishCard}>
-              <TouchableOpacity>
-                <Text>
+              <TouchableOpacity onPress={() => alertmsg(dish)}>
+                <Text style={styles.addtocart}>
                   <Ionicons
                     name="add-circle-outline"
                     size={24}
-                    color="#fc823"
+                    color="#fcb823"
                   />
                 </Text>
               </TouchableOpacity>
@@ -213,6 +242,7 @@ const styles = StyleSheet.create({
   indicator: {
     marginTop: 45,
   },
+  addtocart: { textAlign: "right" },
   restaurantHeader: {
     alignItems: "center",
     marginBottom: 20,
@@ -277,28 +307,24 @@ const styles = StyleSheet.create({
   dishImage: {
     width: "100%",
     height: 150,
-    resizeMode: "cover",
     borderRadius: 10,
+    marginBottom: 10,
   },
   dishName: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
-    marginTop: 10,
     color: "#333",
-    textAlign: "center",
+    marginBottom: 5,
   },
   dishCategory: {
-    fontSize: 16,
-    color: "#888",
-    marginTop: 5,
-    textAlign: "center",
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
   },
   dishPrice: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#28a745",
-    marginTop: 5,
-    textAlign: "center",
+    color: "#fcb823",
   },
 });
 

@@ -19,6 +19,7 @@ export default function Header() {
         name="shopping-cart"
         size={31}
         color="#fcb823"
+        onPress={() => navigation.navigate("Cart")}
       />
     </View>
   );
